@@ -49,12 +49,14 @@
     }
   }
   
- 
-@layer base {
-  * {
-    @apply border-border h-full;
+  @layer base {
+    * {
+      @apply border-border;
+    }
+    body {
+      @apply h-full bg-background text-foreground;
+    }
+    html {
+      @apply h-full;
+    }
   }
-  body {
-    @apply bg-background text-foreground h-full;
-  }
-}

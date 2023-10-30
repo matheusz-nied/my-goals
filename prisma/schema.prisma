@@ -10,29 +10,50 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// model Goal {
-//   id              String   @id @default(uuid())
-//   name            String
-//   created_at      DateTime @default(now())
-//   completion_date DateTime
-//   description     String
-//   to_do           String[]
-// }
+model Goal {
+  id           String   @id @default(uuid())
+  name         String
+  created_at   DateTime @default(now())
+  preview_date DateTime
+  current_date DateTime?
+  category     String
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+}
 
+model Task {
+  id        String     @id @default(uuid())
+  type      String
+  date      DateTime
+  category  String
+  priority  Int
+  is_done   Boolean @default(false)
+  minitasks MiniTask[]
+  userId    String
+  user      User       @relation(fields: [userId], references: [id])
+}
+
+model MiniTask {
+  id          String  @id @default(uuid())
+  is_done     Boolean @default(false)
+  description String
+  task        Task    @relation(fields: [taskId], references: [id])
+  taskId      String
+}
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -55,6 +76,8 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  Goal          Goal[]
+  Task          Task[]
 }
 
 model VerificationToken {
