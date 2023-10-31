@@ -10,7 +10,7 @@ import { authOptions } from "@/lib/auth";
 // Optional fields in body: content
 export async function POST(
   req: NextRequest,
-  res: NextApiResponse,
+  res: NextResponse,
 ) {
   const session = await getServerSession(authOptions);
   const body = await new Response(req.body).text();
