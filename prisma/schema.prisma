@@ -11,14 +11,15 @@ datasource db {
 }
 
 model Goal {
-  id           String   @id @default(uuid())
+  id           String    @id @default(uuid())
   name         String
-  created_at   DateTime @default(now())
+  created_at   DateTime  @default(now())
   preview_date DateTime
   current_date DateTime?
   category     String
   userId       String
-  user         User     @relation(fields: [userId], references: [id])
+  user         User      @relation(fields: [userId], references: [id])
+  urlImage     String
 }
 
 model Task {
@@ -27,7 +28,7 @@ model Task {
   date      DateTime
   category  String
   priority  Int
-  is_done   Boolean @default(false)
+  is_done   Boolean    @default(false)
   minitasks MiniTask[]
   userId    String
   user      User       @relation(fields: [userId], references: [id])
