@@ -21,11 +21,22 @@ interface CardProps {
 const GoalCard = ({ goal }: CardProps) => {
   const previewDate = goal.preview_date ? new Date(goal.preview_date) : null;
   const currentDate = goal.current_date ? new Date(goal.current_date) : null;
-  let diffDays
-  if (previewDate && currentDate) {
-    const timeDiff = Math.abs(previewDate.getTime() - currentDate.getTime());
+  const created_at = goal.created_at ? new Date(goal.created_at) : null;
+  const today = new Date();
+  let diffDays;
+  let totalDiffDays;
+  let percentDays;
+  if (created_at && currentDate) {
+    const timeDiff = Math.abs(currentDate.getTime() - today.getTime());
+    const totalTimeDiff = Math.abs(
+      currentDate.getTime() - created_at.getTime(),
+    );
+    
     diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-    console.log(diffDays)
+    totalDiffDays = Math.ceil(totalTimeDiff / (1000 * 3600 * 24));
+    totalDiffDays = (timeDiff / totalTimeDiff);
+    percentDays = (totalDiffDays) * 100;
+    console.log(percentDays);
   }
   return (
     <Card className="w-4/5 max-w-3xl		">
@@ -34,14 +45,9 @@ const GoalCard = ({ goal }: CardProps) => {
       </CardHeader>
       <CardContent className="grid gap-4">
         {goal.urlImage ? (
-          <Image
-            src={goal.urlImage}
-            width={500}
-            height={500}
-            alt="Picture of the author"
-          />
+          <img src={goal.urlImage} />
         ) : (
-          <Image src={defaultImage} alt="Picture of the author" />
+          <Image src={defaultImage} alt="Gold money" />
         )}
 
         <div className=" flex items-center space-x-4 rounded-md p-4">
@@ -59,7 +65,7 @@ const GoalCard = ({ goal }: CardProps) => {
         </div>
       </CardContent>
       <CardFooter>
-        <Progress value={33} />
+        <Progress value={percentDays} />
       </CardFooter>
     </Card>
   );

@@ -21,7 +21,6 @@ export async function GET(request: Request) {
       },
     },
   });
-  console.log(goals)
   return NextResponse.json({goals: goals}, {status: 200});
 }
 export async function POST(req: NextRequest, res: NextResponse) {

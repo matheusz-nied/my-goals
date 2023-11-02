@@ -1,4 +1,3 @@
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -36,6 +35,11 @@ import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
 
+const emptyStringToUndefined = z.literal("").transform(() => undefined);
+
+export function asOptionalField<T extends z.ZodTypeAny>(schema: T) {
+  return schema.optional().or(emptyStringToUndefined);
+}
 const formSchema = z.object({
   name: z.string().min(2, {
     message: "Username must be at least 2 characters.",
@@ -47,9 +51,7 @@ const formSchema = z.object({
   preview_date: z.date({
     required_error: "A date of birth is required.",
   }),
-  urlImage: z.string().min(7, {
-    message: "Username must be at least 7 characters.",
-  }),
+  urlImage: asOptionalField(z.string()),
 });
 
 const DialogForm = () => {
@@ -67,7 +69,6 @@ const DialogForm = () => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const body = values;
-      console.log(body);
 
       await fetch("/api/goal", {
         method: "POST",
@@ -186,14 +187,17 @@ const DialogForm = () => {
                 </FormItem>
               )}
             />
-             <FormField
+            <FormField
               control={form.control}
               name="urlImage"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Imagem da sua Meta</FormLabel>
                   <FormControl>
-                    <Input placeholder="https://my-goals-theta.vercel.app/urlImage" {...field} />
+                    <Input
+                      placeholder="https://my-goals-theta.vercel.app/urlImage"
+                      {...field}
+                    />
                   </FormControl>
                   <FormDescription>Url da imagem</FormDescription>
                   <FormMessage />

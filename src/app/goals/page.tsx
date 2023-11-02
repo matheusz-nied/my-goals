@@ -29,14 +29,14 @@ export default function Home() {
       setGoals(goals);
     }
     renderGoals();
-  }, []);
+  }, [goals]);
 
   return (
     <div className="flex flex-col align-middle gap-8">
-      <h1 className="text-xl font-semibold text-center my-5		">
+      <h1 className="text-4xl font-semibold text-center my-5		">
         Suas <span className="text-primary">Metas</span>
       </h1>{" "}
-      <div className="flex flex-wrap gap-8 justify-center">
+      <div className="flex flex-wrap gap-8 justify-center gap-x-44">
         {goals.map((goal: Goal) => {
           return <GoalCard key={goal.id} goal={goal}></GoalCard>;
         })}
