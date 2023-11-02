@@ -19,7 +19,7 @@ model Goal {
   category     String
   userId       String
   user         User      @relation(fields: [userId], references: [id])
-  urlImage     String
+  urlImage     String?
 }
 
 model Task {

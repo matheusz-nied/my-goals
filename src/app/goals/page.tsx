@@ -1,196 +1,47 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { DatePickerWithPresets } from "@/components/ui/datePickerWithPresets";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import FloatButton from "@/components/ui/floatButton";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
-
-const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
-  category: z.enum(["profissional", "pessoal"], {
-    required_error: "You need to select a notification type.",
-  }),
-
-  preview_date: z.date({
-    required_error: "A date of birth is required.",
-  }),
-});
+import { GetStaticProps } from "next";
+import DialogForm from "./components/Form";
+import { prismaClient } from "@/lib/prisma";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { Goal } from "@/model/Goal";
+import GoalCard from "./components/GoalCard";
 
 export default function Home() {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-    },
-  });
+  const [goals, setGoals] = useState([]);
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      const body = values;
-      console.log(body);
-
-      await fetch("/api/goal", {
-        method: "POST",
+  useEffect(() => {
+    async function getAllGoals() {
+      const res = await fetch("/api/goal", {
+        method: "GET",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
       });
+      const body = await new Response(res.body).text();
+      const goalsObject = JSON.parse(body);
+      const goals = await goalsObject.goals;
 
-      
-    } catch (error) {
-      console.error(error);
-
+      return goals;
     }
-  }
+
+    async function renderGoals() {
+      const goals = await getAllGoals();
+      setGoals(goals);
+    }
+    renderGoals();
+  }, []);
+
   return (
-    <div className="flex">
-      <h1>Goals</h1>
-      <Dialog>
-        <DialogTrigger>
-          <FloatButton></FloatButton>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Criar Meta</DialogTitle>
-            <DialogDescription>
-              Crie uma meta de vida que tenha para motivar e inspirar seu
-              processo.
-            </DialogDescription>
-          </DialogHeader>
-
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Meta</FormLabel>
-                    <FormControl>
-                      <Input placeholder="shadcn" {...field} />
-                    </FormControl>
-                    <FormDescription>Qual é sua meta?</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="category"
-                render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel>Qual tipo de meta?</FormLabel>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        className="flex flex-col space-y-1"
-                      >
-                        <FormItem className="flex items-center space-x-3 space-y-0">
-                          <FormControl>
-                            <RadioGroupItem value="profissional" />
-                          </FormControl>
-                          <FormLabel className="font-normal">
-                            Profissional
-                          </FormLabel>
-                        </FormItem>
-                        <FormItem className="flex items-center space-x-3 space-y-0">
-                          <FormControl>
-                            <RadioGroupItem value="pessoal" />
-                          </FormControl>
-                          <FormLabel className="font-normal">Pessoal</FormLabel>
-                        </FormItem>
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="preview_date"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Para quando é a meta?</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-[240px] pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground",
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) =>
-                            date < new Date()
-                          }
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-
-                    <FormDescription>
-                      Seleciona quando deseja conquistar.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <DialogFooter>
-                <Button type="submit">Criar Meta</Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
+    <div className="flex flex-col align-middle gap-8">
+      <h1 className="text-xl font-semibold text-center my-5		">
+        Suas <span className="text-primary">Metas</span>
+      </h1>{" "}
+      <div className="flex flex-wrap gap-8 justify-center">
+        {goals.map((goal: Goal) => {
+          return <GoalCard key={goal.id} goal={goal}></GoalCard>;
+        })}
+      </div>
+      <DialogForm />
     </div>
   );
 }
