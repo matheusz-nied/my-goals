@@ -69,6 +69,7 @@ const DialogForm = () => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const body = values;
+      handleDialog();
 
       await fetch("/api/goal", {
         method: "POST",
@@ -76,7 +77,6 @@ const DialogForm = () => {
         body: JSON.stringify(body),
       });
 
-      handleDialog();
     } catch (error) {
       console.error(error);
     }
