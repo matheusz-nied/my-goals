@@ -44,8 +44,12 @@ const GoalCard = ({ goal }: CardProps) => {
 
     diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
     totalDiffDays = Math.ceil(totalTimeDiff / (1000 * 3600 * 24));
+
     totalDiffDays = timeDiff / totalTimeDiff;
-    percentDays = totalDiffDays * 100;
+
+    percentDays = (1 - totalDiffDays) * 100;
+    console.log(percentDays);
+
   }
 
   async function deleteGoal(id: string) {
@@ -97,7 +101,7 @@ const GoalCard = ({ goal }: CardProps) => {
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>
-                Tem certeza que deseja deletar?
+                Quer desistir dos seus sonhos?
               </AlertDialogTitle>
               <AlertDialogDescription>
                 Essa ação não pode ser desfeita. Isso excluirá permanentemente

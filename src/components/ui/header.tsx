@@ -51,10 +51,12 @@ const Header = () => {
 
                 <div className="flex flex-col">
                   <p className="font-medium">{data.user.name}</p>
+                  
                 </div>
               </div>
 
               <Separator />
+              
             </div>
           )}
 
@@ -70,16 +72,7 @@ const Header = () => {
               </Button>
             )}
 
-            {status === "authenticated" && (
-              <Button
-                onClick={handleLogoutClick}
-                variant="outline"
-                className="w-full justify-start gap-2"
-              >
-                <LogOutIcon size={16} />
-                Fazer Logout
-              </Button>
-            )}
+            
 
             <SheetClose asChild>
               <Link href="/">
@@ -128,6 +121,16 @@ const Header = () => {
                 </Button>
               </Link>
             </SheetClose>
+            {status === "authenticated" && (
+              <Button
+                onClick={handleLogoutClick}
+                variant="outline"
+                className="w-full justify-start gap-2"
+              >
+                <LogOutIcon size={16} />
+                Fazer Logout
+              </Button>
+            )}
           </div>
         </SheetContent>
       </Sheet>
