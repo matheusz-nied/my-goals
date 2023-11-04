@@ -31,7 +31,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, ScrollText } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
 
@@ -84,8 +84,8 @@ const DialogForm = () => {
 
   return (
     <Dialog open={open} onOpenChange={handleDialog}>
-      <DialogTrigger>
-        <FloatButton></FloatButton>
+      <DialogTrigger className="flex justify-end mr-16">
+       <Button className="rounded-[5px] gap-2">Criar meta  <ScrollText /></Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

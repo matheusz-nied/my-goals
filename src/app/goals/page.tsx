@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { Goal } from "@/model/Goal";
 import GoalCard from "./components/GoalCard";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Home() {
   const [goals, setGoals] = useState([]);
@@ -32,16 +33,26 @@ export default function Home() {
   }, [goals]);
 
   return (
-    <div className="flex flex-col align-middle gap-8">
-      <h1 className="text-4xl font-semibold text-center my-5		">
+    <div className="flex flex-col gap-8 align-middle">
+      <h1 className="my-4 text-center text-4xl font-semibold		">
         Suas <span className="text-primary">Metas</span>
       </h1>{" "}
-      <div className="flex flex-wrap gap-8 justify-center gap-x-44">
-        {goals.map((goal: Goal) => {
-          return <GoalCard key={goal.id} goal={goal}></GoalCard>;
-        })}
-      </div>
       <DialogForm />
+      <div className="flex flex-wrap justify-center gap-8 gap-x-44">
+        {goals.length == 0 ? (
+          <div className="flex items-center space-x-4">
+            <Skeleton className="h-12 w-12 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[250px]" />
+              <Skeleton className="h-4 w-[200px]" />
+            </div>
+          </div>
+        ) : (
+          goals.map((goal: Goal) => {
+            return <GoalCard key={goal.id} goal={goal}></GoalCard>;
+          })
+        )}
+      </div>
     </div>
   );
 }

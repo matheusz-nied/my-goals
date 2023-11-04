@@ -111,16 +111,17 @@ const Header = () => {
             </SheetClose>
 
             <SheetClose asChild>
-              <Link href="/about">
+              <Link href="/miniTasks">
                 <Button
                   variant="outline"
                   className="w-full justify-start gap-2"
                 >
-                  <ListOrderedIcon size={16} />
-                  Sobre
+                  <PercentIcon size={16} />
+                  Mini Tasks
                 </Button>
               </Link>
             </SheetClose>
+ 
             {status === "authenticated" && (
               <Button
                 onClick={handleLogoutClick}
