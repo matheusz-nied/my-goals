@@ -24,10 +24,10 @@ model Goal {
 
 model Task {
   id        String     @id @default(uuid())
-  type      String
+  toDo      String
   date      DateTime
   category  String
-  priority  Int
+  priority  String
   is_done   Boolean    @default(false)
   minitasks MiniTask[]
   userId    String

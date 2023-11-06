@@ -23,6 +23,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import FloatButton from "@/components/ui/floatButton";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
@@ -30,11 +31,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarIcon, Goal, ScrollText } from "lucide-react";
+import { CalendarIcon, ScrollText } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
-import {  useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 
 const emptyStringToUndefined = z.literal("").transform(() => undefined);
 
@@ -42,23 +41,22 @@ export function asOptionalField<T extends z.ZodTypeAny>(schema: T) {
   return schema.optional().or(emptyStringToUndefined);
 }
 const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
+  toDo: z.string({
+    required_error: "Task is required",
   }),
   category: z.enum(["profissional", "pessoal"], {
     required_error: "You need to select a notification type.",
   }),
-
-  preview_date: z.date({
+  date: z.date({
     required_error: "A date of birth is required.",
   }),
-  urlImage: asOptionalField(z.string()),
+  priority: z.enum(["low", "medium", "high"], {
+    required_error: "You need to select a priority type.",
+  }),
 });
 
-const DialogForm = () => {
+const FormTask = () => {
   const [open, setOpen] = useState(false);
-  const { status } = useSession()
-  const router = useRouter()
 
   const handleDialog = () => {
     setOpen(!open);
@@ -66,45 +64,37 @@ const DialogForm = () => {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {},
+    defaultValues: {
+      date: new Date(),
+    },
   });
 
-
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
-  
     try {
-    
       const body = values;
       handleDialog();
-      
-      await fetch("/api/goal", {
+      await fetch("/api/tasks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-
     } catch (error) {
       console.error(error);
- 
-    }
-    if (status === "unauthenticated") {
-      router.push("/api/auth/signin")
-
     }
   }
 
   return (
     <Dialog open={open} onOpenChange={handleDialog}>
-      <DialogTrigger className="flex justify-end mr-6">
-       <Button className="rounded-[5px] gap-2">Criar meta  <Goal /></Button>
+      <DialogTrigger className="mr-6 flex justify-end">
+        <Button className="gap-2 rounded">
+          Criar Task <ScrollText />
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Criar Meta</DialogTitle>
+          <DialogTitle>Criar Task</DialogTitle>
           <DialogDescription>
-            Crie uma meta de vida que tenha para motivar e inspirar seu
-            processo.
+            Crie de tarefa importante que precisa fazer hoje.
           </DialogDescription>
         </DialogHeader>
 
@@ -112,14 +102,14 @@ const DialogForm = () => {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
               control={form.control}
-              name="name"
+              name="toDo"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Meta</FormLabel>
+                  <FormLabel>Task</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ser rico" {...field} />
+                    <Input placeholder="Terminar relatório" {...field} />
                   </FormControl>
-                  <FormDescription>Qual é sua meta?</FormDescription>
+                  <FormDescription>O que você precisa fazer?</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -129,7 +119,7 @@ const DialogForm = () => {
               name="category"
               render={({ field }) => (
                 <FormItem className="space-y-3">
-                  <FormLabel>Qual tipo de meta?</FormLabel>
+                  <FormLabel>Qual tipo de tarefa?</FormLabel>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
@@ -158,10 +148,11 @@ const DialogForm = () => {
             />
             <FormField
               control={form.control}
-              name="preview_date"
+              name="date"
+              defaultValue={new Date()}
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Para quando é a meta?</FormLabel>
+                  <FormLabel>Que dia deseja executar a tarefa?</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -193,25 +184,48 @@ const DialogForm = () => {
                   </Popover>
 
                   <FormDescription>
-                    Seleciona quando deseja conquistar.
+                    Seleciona quando deve executar a tarefa.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <FormField
+             <FormField
               control={form.control}
-              name="urlImage"
+              name="priority"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Imagem da sua Meta</FormLabel>
+                <FormItem className="space-y-3">
+                  <FormLabel>Qual a prioridade da tarefa?</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="https://my-goals-theta.vercel.app/urlImage"
-                      {...field}
-                    />
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex flex-col space-y-1"
+                    >
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="low" />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          Baixa
+                        </FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="medium" />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          Media
+                        </FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="high" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Alta</FormLabel>
+                      </FormItem>
+                    </RadioGroup>
                   </FormControl>
-                  <FormDescription>Url da imagem</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -226,4 +240,4 @@ const DialogForm = () => {
   );
 };
 
-export default DialogForm;
+export default FormTask;

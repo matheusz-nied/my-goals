@@ -1,6 +1,14 @@
+"use client"
+import { useSession } from "next-auth/react"
+import { redirect } from "next/navigation"
 
 
-export default async function TaskPage() {
+export default function TaskPage() {
+  const { status } = useSession()
+
+  if (status === "unauthenticated") {
+    redirect('/api/auth/signin')
+  }
   return (
     <>
       <div className="">

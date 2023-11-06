@@ -1,3 +1,4 @@
+
 import type { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -10,39 +11,38 @@ import { Goal } from "@/model/Goal";
 // Required fields in body: title
 // Optional fields in body: content
 export async function GET(request: Request) {
+  
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
     console.log({ error: "Erro" });
     return NextResponse.json({ error: "Erro" });
   }
-  const goals = await prismaClient.goal.findMany({
+  const tasks = await prismaClient.task.findMany({
     where: {
       user: {
         email: session?.user?.email,
       },
     },
   });
-  return NextResponse.json({ goals: goals }, { status: 200 });
+  return NextResponse.json({ tasks: tasks }, { status: 200 });
 }
 export async function POST(req: NextRequest, res: NextResponse) {
   const session = await getServerSession(authOptions);
   const body = await new Response(req.body).text();
-  const { name, category, preview_date, urlImage } = JSON.parse(body);
+  const { toDo, category, date, priority } = JSON.parse(body);
   if (!session?.user?.email) {
-
     console.log({ error: "Erro" });
     return NextResponse.json({ error: "Erro" });
   }
   const email = session.user.email; // we know email is defined here because of the check above
 
-  const result = await prismaClient.goal.create({
+  const result = await prismaClient.task.create({
     data: {
-      name: name,
+      toDo: toDo,
       category: category,
-      preview_date: preview_date,
-      current_date: preview_date,
+      date: date,
+      priority: priority,
       user: { connect: { email: email } },
-      urlImage: urlImage,
     },
   });
 
@@ -51,14 +51,14 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
 
 export async function DELETE(req: NextRequest) {
-  const goalId = await new Response(req.body).text();
-  if(!goalId) {
+  const taskId = await new Response(req.body).text();
+  if(!taskId) {
     return NextResponse.json({ error: "Id is missing" });
 
   }
   try {
-    const goal = await prismaClient.goal.delete({
-      where: { id: goalId },
+    const goal = await prismaClient.task.delete({
+      where: { id: taskId },
     });
     return NextResponse.json({ status: 200 });
   } catch (error) {
