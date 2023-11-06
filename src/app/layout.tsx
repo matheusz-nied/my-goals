@@ -13,21 +13,24 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-  children
+  children,
 }: {
   children: React.ReactNode;
 }) {
   return (
     <html lang="en">
-     
       <body className={inter.className}>
-        <div className="flex h-full flex-col">
-          <AuthProvider>
+        <AuthProvider>
+
+          <div className="flex h-full flex-col">
             <Header />
+            <div className="h-full">
+
             {children}
-        <Footer/>
-          </AuthProvider>
-        </div>
+            </div>
+          <Footer />
+          </div>
+        </AuthProvider>
       </body>
     </html>
   );
