@@ -50,7 +50,7 @@ const formSchema = z.object({
   date: z.date({
     required_error: "A date of birth is required.",
   }),
-  priority: z.enum(["low", "medium", "high"], {
+  priority: z.enum(["Low", "Medium", "High"], {
     required_error: "You need to select a priority type.",
   }),
 });
@@ -204,7 +204,7 @@ const FormTask = () => {
                     >
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
-                          <RadioGroupItem value="low" />
+                          <RadioGroupItem value="Low" />
                         </FormControl>
                         <FormLabel className="font-normal">
                           Baixa
@@ -212,7 +212,7 @@ const FormTask = () => {
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
-                          <RadioGroupItem value="medium" />
+                          <RadioGroupItem value="Medium" />
                         </FormControl>
                         <FormLabel className="font-normal">
                           Media
@@ -220,7 +220,7 @@ const FormTask = () => {
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
-                          <RadioGroupItem value="high" />
+                          <RadioGroupItem value="High" />
                         </FormControl>
                         <FormLabel className="font-normal">Alta</FormLabel>
                       </FormItem>

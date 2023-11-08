@@ -12,57 +12,27 @@ import {
 } from "@/components/ui/table";
 import { ChevronRight, Loader } from "lucide-react";
 import FormTask from "./components/FormTask";
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Task } from "@/model/Task";
-
-const invoices = [
-  {
-    invoice: "INV001",
-    paymentStatus: "Paid",
-    paymentMethod: "Medium",
-  },
-  {
-    invoice: "INV002",
-    paymentStatus: "Pending",
-    paymentMethod: "Easy",
-  },
-  {
-    invoice: "INV003",
-    paymentStatus: "Unpaid",
-    paymentMethod: "Easy",
-  },
-  {
-    invoice: "INV004",
-    paymentStatus: "Paid",
-    paymentMethod: "Hard",
-  },
-  {
-    invoice: "INV005",
-    paymentStatus: "Paid",
-    paymentMethod: "Easy",
-  },
-  {
-    invoice: "INV006",
-    paymentStatus: "Pending",
-    paymentMethod: "Medium",
-  },
-  {
-    invoice: "INV007",
-    paymentStatus: "Unpaid",
-    paymentMethod: "Hard",
-  },
-];
+import { Skeleton } from "@/components/ui/skeleton";
+import { CheckedState } from "@radix-ui/react-checkbox";
+import Link from "next/link";
 
 export default function Home() {
-  const { status } = useSession()
+  const { status } = useSession();
 
   if (status === "unauthenticated") {
-    redirect('/api/auth/signin')
+    redirect("/api/auth/signin");
   }
-  const [tasks, setGoals] = useState([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  let arraytask = new Array();
 
+  const [checkedState, setCheckedState] = useState(new Map(arraytask));
+  tasks.forEach((task) => {
+    checkedState.set(task.id, task.is_done);
+  });
   useEffect(() => {
     async function getAllTasks() {
       const res = await fetch("/api/tasks", {
@@ -78,46 +48,110 @@ export default function Home() {
 
     async function renderTasks() {
       const tasks = await getAllTasks();
-      setGoals(tasks);
+      setTasks(tasks);
     }
     renderTasks();
-  }, [tasks]);
+  }, []);
+
+  // const handleOnChange = async (task: Task) => {
+  //   console.log(checkedState.get(task.id));
+  //   setCheckedState(checkedState.set(task.id, !task.is_done));
+  //   console.log(checkedState.get(task.id));
+  //   task.is_done = !task.is_done;
+  //   // const response = await fetch(`/api/tasks`, {
+  //   //   method: "PUT",
+  //   //   headers: {
+  //   //     "Content-Type": "application/json",
+  //   //   },
+  //   //   body: JSON.stringify(task),
+  //   // });
+
+  //   // if (!response.ok) {
+  //   // }
+  // };
   return (
     <div className="flex flex-col gap-8 align-middle">
       <h1 className="my-4 text-center text-4xl font-semibold		">
         Suas <span className="text-primary">Tasks</span>
       </h1>{" "}
       <FormTask />
-      <Table>
-        <TableCaption>Lista das suas metas diárias.</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="pr-2"> </TableHead>
-            <TableHead>Meta</TableHead>
-            <TableHead>Prioridade</TableHead>
-            <TableHead>Mini Tasks</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {tasks.map((task : Task) => (
-            <TableRow key={task.id}>
-              <TableCell className="font-medium">
-                {" "}
-                <Checkbox id="terms" className=" rounded align-middle" />
-              </TableCell>
-              <TableCell>{task.toDo}</TableCell>
-              <TableCell>{task.priority}</TableCell>
-              <TableCell>
-                <Button variant="outline" className="h-7 rounded pe-0 pl-2">
-                  {/* <ChevronRight className="h-4 w-4" /> */}
-                  <span className="text-xs opacity-60">Open</span>
-                  <ChevronRight className="" />
-                </Button>
-              </TableCell>
+      {tasks != undefined && tasks.length == 0 ? (
+        <div className="flex	 items-center justify-center space-x-4">
+          <div>
+            <Skeleton className="h-12 w-12 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[250px]" />
+              <Skeleton className="h-4 w-[200px]" />
+            </div>
+          </div>
+        </div>
+      ) : (
+        <Table>
+          <TableCaption>Lista das suas metas diárias.</TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="pr-2"> </TableHead>
+              <TableHead>Meta</TableHead>
+              <TableHead>Prioridade</TableHead>
+              <TableHead>Mini Tasks</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {tasks.map((task: Task) => (
+              <TableRow
+                key={task.id}
+                className={checkedState.get(task.id) ? "bg-muted/50" : ""}
+              >
+                <TableCell className="font-medium">
+                  {" "}
+                  <Checkbox
+                    id="terms"
+                    checked={checkedState.get(task.id) as CheckedState}
+                    className=" rounded align-middle"
+                    onCheckedChange={async (checked) => {
+                      setCheckedState(
+                        new Map(checkedState.set(task.id, !task.is_done)),
+                      );
+                      // console.log(checkedState.get(task.id));
+                      task.is_done = !task.is_done;
+                      const response = await fetch(`/api/tasks`, {
+                        method: "PUT",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(task),
+                      });
+
+                      if (!response.ok) {
+                      }
+                    }}
+                  />
+                </TableCell>
+                <TableCell
+                  className={checkedState.get(task.id) ? "line-through" : ""}
+                >
+                  {task.toDo}
+                </TableCell>
+                <TableCell>{task.priority}</TableCell>
+                <TableCell>
+                  <Button
+                    variant="outline"
+                    className="h-7 rounded pe-0 pl-2"
+                    asChild
+                  >
+                    <Link
+                      href={`/miniTasks/${task.id}`}
+                      className="text-xs opacity-60"
+                    >
+                      Open <ChevronRight className="" />
+                    </Link>
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
     </div>
   );
 }

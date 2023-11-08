@@ -1,4 +1,3 @@
-
 import type { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -11,7 +10,6 @@ import { Goal } from "@/model/Goal";
 // Required fields in body: title
 // Optional fields in body: content
 export async function GET(request: Request) {
-  
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
     console.log({ error: "Erro" });
@@ -49,12 +47,10 @@ export async function POST(req: NextRequest, res: NextResponse) {
   return NextResponse.json(result);
 }
 
-
 export async function DELETE(req: NextRequest) {
   const taskId = await new Response(req.body).text();
-  if(!taskId) {
+  if (!taskId) {
     return NextResponse.json({ error: "Id is missing" });
-
   }
   try {
     const goal = await prismaClient.task.delete({
@@ -62,28 +58,30 @@ export async function DELETE(req: NextRequest) {
     });
     return NextResponse.json({ status: 200 });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return NextResponse.json({ error: "Erro" });
-
   }
 }
-// export async function PUT(req: NextRequest) {
-//   const body = await new Response(req.body).text();
+export async function PUT(req: NextRequest) {
+  const body = await new Response(req.body).text();
+  console.log(body);
+  const { id, toDo, category, date, priority,is_done } = JSON.parse(body);
+  try {
+    const task = await prismaClient.task.update({
+      where: { id: id },
+      data: {
+        toDo: toDo,
+        category: category,
+        date: date,
+        priority: priority,
+        is_done: is_done
+      },
+    });
 
-//   const { goalId, name, category, urlImage } = JSON.parse(body);
-//   try {
-//     const goal = await prismaClient.goal.update({
-//       where: { id: goalId },
-//       data: {
-//         name: name,
-//         category: category,
-//         urlImage: urlImage,
-//       },
-//     });
-//     return NextResponse.json({ goal: goal }, { status: 200 });
-//   } catch (error) {
-//     throw new Error(
-//       `The HTTP ${req.method} method is not supported at this route.`,
-//     );
-//   }
-// }
+    return NextResponse.json({ task: task }, { status: 200 });
+  } catch (error) {
+    throw new Error(
+      `The HTTP ${req.method} method is not supported at this route.`,
+    );
+  }
+}

@@ -55,8 +55,6 @@ export default function Home() {
             return <GoalCard key={goal.id} goal={goal}></GoalCard>;
           })):( <span className="text-primary"></span>)
 
-
-
         )}
       </div>
     </div>
