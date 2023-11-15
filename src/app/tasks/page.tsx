@@ -12,25 +12,33 @@ import {
 } from "@/components/ui/table";
 import { ChevronRight, Loader } from "lucide-react";
 import FormTask from "./components/FormTask";
-import { SetStateAction, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Task } from "@/model/Task";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CheckedState } from "@radix-ui/react-checkbox";
 import Link from "next/link";
+import { TaskContext } from "@/context/task";
+import ObjectTaskContext from "./interface/ObjectTaskContext";
 
-export default function Home() {
+
+
+
+export default function TaskPage() {
   const { status } = useSession();
 
   if (status === "unauthenticated") {
     redirect("/api/auth/signin");
   }
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const taskContext = useContext(TaskContext) as ObjectTaskContext;
+
+  const {tasks, setTasks} = taskContext
+  //const [tasks, setTasks] = useState<Task[]>([]);
   let arraytask = new Array();
 
   const [checkedState, setCheckedState] = useState(new Map(arraytask));
-  tasks.forEach((task) => {
+  tasks.forEach((task: Task) => {
     checkedState.set(task.id, task.is_done);
   });
   useEffect(() => {
@@ -53,22 +61,6 @@ export default function Home() {
     renderTasks();
   }, []);
 
-  // const handleOnChange = async (task: Task) => {
-  //   console.log(checkedState.get(task.id));
-  //   setCheckedState(checkedState.set(task.id, !task.is_done));
-  //   console.log(checkedState.get(task.id));
-  //   task.is_done = !task.is_done;
-  //   // const response = await fetch(`/api/tasks`, {
-  //   //   method: "PUT",
-  //   //   headers: {
-  //   //     "Content-Type": "application/json",
-  //   //   },
-  //   //   body: JSON.stringify(task),
-  //   // });
-
-  //   // if (!response.ok) {
-  //   // }
-  // };
   return (
     <div className="flex flex-col gap-8 align-middle">
       <h1 className="my-4 text-center text-4xl font-semibold		">
@@ -76,7 +68,21 @@ export default function Home() {
       </h1>{" "}
       <FormTask />
       {tasks != undefined && tasks.length == 0 ? (
-        <div className="flex	 items-center justify-center space-x-4">
+        <div className="flex flex-col	 items-center justify-center gap-12">
+          <div>
+            <Skeleton className="h-12 w-12 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[250px]" />
+              <Skeleton className="h-4 w-[200px]" />
+            </div>
+          </div>
+          <div>
+            <Skeleton className="h-12 w-12 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[250px]" />
+              <Skeleton className="h-4 w-[200px]" />
+            </div>
+          </div>
           <div>
             <Skeleton className="h-12 w-12 rounded-full" />
             <div className="space-y-2">
@@ -112,7 +118,6 @@ export default function Home() {
                       setCheckedState(
                         new Map(checkedState.set(task.id, !task.is_done)),
                       );
-                      // console.log(checkedState.get(task.id));
                       task.is_done = !task.is_done;
                       const response = await fetch(`/api/tasks`, {
                         method: "PUT",
