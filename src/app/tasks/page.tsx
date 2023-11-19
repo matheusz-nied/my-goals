@@ -59,7 +59,7 @@ export default function TaskPage() {
       setTasks(tasks);
     }
     renderTasks();
-  }, []);
+  }, [tasks, setTasks]);
 
   return (
     <div className="flex flex-col gap-8 align-middle">

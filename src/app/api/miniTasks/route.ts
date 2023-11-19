@@ -9,38 +9,37 @@ import { Goal } from "@/model/Goal";
 // POST /api/post
 // Required fields in body: title
 // Optional fields in body: content
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
     console.log({ error: "Erro" });
     return NextResponse.json({ error: "Erro" });
   }
-  const tasks = await prismaClient.task.findMany({
-    where: {
-      user: {
-        email: session?.user?.email,
+  const params =request.nextUrl.searchParams 
+  const taskId  = params.get('taskId')
+
+  if (taskId === null) {
+    return NextResponse.json({ error: "Params null" });
+  } else {
+    const miniTasks = await prismaClient.miniTask.findMany({
+      where: {
+        taskId: taskId
       },
-    },
-  });
-  return NextResponse.json({ tasks: tasks }, { status: 200 });
+    });
+
+    return NextResponse.json({ miniTasks: miniTasks }, { status: 200 });
+  }
+  
+
 }
 export async function POST(req: NextRequest, res: NextResponse) {
-  const session = await getServerSession(authOptions);
   const body = await new Response(req.body).text();
-  const { toDo, category, date, priority } = JSON.parse(body);
-  if (!session?.user?.email) {
-    console.log({ error: "Erro" });
-    return NextResponse.json({ error: "Erro" });
-  }
-  const email = session.user.email; // we know email is defined here because of the check above
+  const { description, taskId } = JSON.parse(body);
 
-  const result = await prismaClient.task.create({
+  const result = await prismaClient.miniTask.create({
     data: {
-      toDo: toDo,
-      category: category,
-      date: date,
-      priority: priority,
-      user: { connect: { email: email } },
+      description: description,
+      taskId: taskId,
     },
   });
 
@@ -48,13 +47,13 @@ export async function POST(req: NextRequest, res: NextResponse) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const taskId = await new Response(req.body).text();
-  if (!taskId) {
+  const miniTaskId = await new Response(req.body).text();
+  if (!miniTaskId) {
     return NextResponse.json({ error: "Id is missing" });
   }
   try {
-    const task = await prismaClient.task.delete({
-      where: { id: taskId },
+    const miniTask = await prismaClient.miniTask.delete({
+      where: { id: miniTaskId },
     });
     return NextResponse.json({ status: 200 });
   } catch (error) {
@@ -64,20 +63,19 @@ export async function DELETE(req: NextRequest) {
 }
 export async function PUT(req: NextRequest) {
   const body = await new Response(req.body).text();
-  const { id, toDo, category, date, priority,is_done } = JSON.parse(body);
+  const {id, description, taskId,is_done } = JSON.parse(body);
   try {
-    const task = await prismaClient.task.update({
+    const result = await prismaClient.miniTask.update({
       where: { id: id },
       data: {
-        toDo: toDo,
-        category: category,
-        date: date,
-        priority: priority,
+        description: description,
+        taskId: taskId,
         is_done: is_done
+
       },
     });
 
-    return NextResponse.json({ task: task }, { status: 200 });
+    return NextResponse.json({ miniTask: result }, { status: 200 });
   } catch (error) {
     throw new Error(
       `The HTTP ${req.method} method is not supported at this route.`,
