@@ -85,7 +85,7 @@ export default function MiniTaskPage({
       setMiniTasks(miniTasks);
     }
     renderMiniTasks();
-  }, []);
+  }, [miniTasks, setMiniTasks]);
 
   return (
     <div className="flex flex-col gap-8 align-middle">
