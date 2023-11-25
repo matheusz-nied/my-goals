@@ -33,7 +33,9 @@ import {
 } from "@/components/ui/popover";
 import { CalendarIcon, ScrollText } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { FormContext } from "@/context/form";
+import ObjectFormContext from "../interface/ObjectFormContext";
 
 const emptyStringToUndefined = z.literal("").transform(() => undefined);
 
@@ -57,6 +59,8 @@ const formSchema = z.object({
 
 const FormTask = () => {
   const [open, setOpen] = useState(false);
+  const formContext = useContext(FormContext) as ObjectFormContext;
+  const { formState, setFormState } = formContext;
 
   const handleDialog = () => {
     setOpen(!open);
@@ -78,6 +82,11 @@ const FormTask = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
+
+      console.log(formState)
+      setFormState(!formState);
+      console.log(formState)
+
     } catch (error) {
       console.error(error);
     }
@@ -190,7 +199,7 @@ const FormTask = () => {
                 </FormItem>
               )}
             />
-             <FormField
+            <FormField
               control={form.control}
               name="priority"
               render={({ field }) => (
@@ -206,17 +215,13 @@ const FormTask = () => {
                         <FormControl>
                           <RadioGroupItem value="Low" />
                         </FormControl>
-                        <FormLabel className="font-normal">
-                          Baixa
-                        </FormLabel>
+                        <FormLabel className="font-normal">Baixa</FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
                           <RadioGroupItem value="Medium" />
                         </FormControl>
-                        <FormLabel className="font-normal">
-                          Media
-                        </FormLabel>
+                        <FormLabel className="font-normal">Media</FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>

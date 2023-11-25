@@ -21,6 +21,8 @@ import { CheckedState } from "@radix-ui/react-checkbox";
 import Link from "next/link";
 import { TaskContext } from "@/context/task";
 import ObjectTaskContext from "./interface/ObjectTaskContext";
+import ObjectFormContext from "./interface/ObjectFormContext";
+import { FormContext } from "@/context/form";
 
 export default function TaskPage() {
   const { status } = useSession();
@@ -29,8 +31,10 @@ export default function TaskPage() {
     redirect("/api/auth/signin");
   }
   const taskContext = useContext(TaskContext) as ObjectTaskContext;
-
+  const formContext = useContext(FormContext)  as ObjectFormContext;
   const { tasks, setTasks } = taskContext;
+
+  const { formState, setFormState } = formContext;
   //const [tasks, setTasks] = useState<Task[]>([]);
   let arraytask = new Array();
 
@@ -59,8 +63,8 @@ export default function TaskPage() {
       setTasks(tasks);
     }
     renderTasks();
-  }, [setTasks, tasks]);
-
+  }, [setTasks,formState, setFormState]);
+ 
   return (
     <div className="flex flex-col gap-8 align-middle">
       <h1
@@ -127,7 +131,6 @@ text-4xl		"
                       setCheckedState(
                         new Map(checkedState.set(task.id, !task.is_done)),
                       );
-                      console.log(checkedState)
                       const taskIndex = tasks.findIndex((thisTask) => {
                         return thisTask.id == task.id;
                       });

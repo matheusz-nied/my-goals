@@ -5,6 +5,7 @@ import { AuthProvider } from "@/providers/auth";
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
 import {TaskProvider} from "@/context/task"
+import { FormProvider } from "@/context/form";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,8 +26,10 @@ export default function RootLayout({
           <div className="flex flex-col">
             <Header />
             <TaskProvider>
+            <FormProvider>
 
             <div className="h-screen">{children}</div>
+            </FormProvider>
             </TaskProvider>
             <Footer />
           </div>
