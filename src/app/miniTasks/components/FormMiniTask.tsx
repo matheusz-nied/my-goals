@@ -130,7 +130,7 @@ const FormTask = ({idTask}:IdTaskProps) => {
 
    
             <DialogFooter>
-              <Button type="submit">Criar Meta</Button>
+              <Button type="submit">Criar Mini Task</Button>
             </DialogFooter>
           </form>
         </Form>

@@ -231,7 +231,7 @@ const FormTask = () => {
               )}
             />
             <DialogFooter>
-              <Button type="submit">Criar Meta</Button>
+              <Button type="submit">Criar Task</Button>
             </DialogFooter>
           </form>
         </Form>

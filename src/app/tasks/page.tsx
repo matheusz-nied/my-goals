@@ -41,6 +41,7 @@ export default function TaskPage() {
   tasks.forEach((task: Task) => {
     checkedState.set(task.id, task.is_done);
   });
+
   useEffect(() => {
     async function getAllTasks() {
       const res = await fetch("/api/tasks", {
@@ -50,16 +51,18 @@ export default function TaskPage() {
       const body = await new Response(res.body).text();
       const tasksObject = JSON.parse(body);
       const tasks = await tasksObject.tasks;
-
+  
       return tasks;
     }
-
+  
     async function renderTasks() {
       const tasks = await getAllTasks();
+      console.log(tasks);
+      
       setTasks(tasks);
     }
     renderTasks();
-  }, [tasks, setTasks]);
+  }, [setTasks,tasks ]);
 
   return (
     <div className="flex flex-col gap-8 align-middle">
@@ -115,10 +118,14 @@ export default function TaskPage() {
                     checked={checkedState.get(task.id) as CheckedState}
                     className=" rounded align-middle"
                     onCheckedChange={async (checked) => {
+                      
                       setCheckedState(
                         new Map(checkedState.set(task.id, !task.is_done)),
-                      );
-                      task.is_done = !task.is_done;
+                        );
+                        
+                        task.is_done = !task.is_done;
+                    
+
                       const response = await fetch(`/api/tasks`, {
                         method: "PUT",
                         headers: {
@@ -126,7 +133,6 @@ export default function TaskPage() {
                         },
                         body: JSON.stringify(task),
                       });
-
                       if (!response.ok) {
                       }
                     }}
