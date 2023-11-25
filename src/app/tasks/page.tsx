@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { ChevronRight, Loader } from "lucide-react";
 import FormTask from "./components/FormTask";
-import { useContext, useEffect, useState } from "react";
+import { SetStateAction, useContext, useEffect, useState } from "react";
 import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Task } from "@/model/Task";
@@ -22,9 +22,6 @@ import Link from "next/link";
 import { TaskContext } from "@/context/task";
 import ObjectTaskContext from "./interface/ObjectTaskContext";
 
-
-
-
 export default function TaskPage() {
   const { status } = useSession();
 
@@ -33,11 +30,12 @@ export default function TaskPage() {
   }
   const taskContext = useContext(TaskContext) as ObjectTaskContext;
 
-  const {tasks, setTasks} = taskContext
+  const { tasks, setTasks } = taskContext;
   //const [tasks, setTasks] = useState<Task[]>([]);
   let arraytask = new Array();
 
   const [checkedState, setCheckedState] = useState(new Map(arraytask));
+
   tasks.forEach((task: Task) => {
     checkedState.set(task.id, task.is_done);
   });
@@ -51,22 +49,28 @@ export default function TaskPage() {
       const body = await new Response(res.body).text();
       const tasksObject = JSON.parse(body);
       const tasks = await tasksObject.tasks;
-  
+
       return tasks;
     }
-  
+
     async function renderTasks() {
       const tasks = await getAllTasks();
-      console.log(tasks);
-      
+
       setTasks(tasks);
     }
     renderTasks();
-  }, [setTasks,tasks ]);
+  }, [setTasks, tasks]);
 
   return (
     <div className="flex flex-col gap-8 align-middle">
-      <h1 className="my-4 text-center text-4xl font-semibold		">
+      <h1
+        className="font let arrayMiniTasks =  new Array(); const [checkedState, setCheckedState]
+
+= useState(new Map(arrayMiniTasks)); miniTasks.forEach((miniTask: MiniTask) =>
+{ checkedState.set(miniTask.id, miniTask.is_done); });-semibold
+  my-4 text-center
+text-4xl		"
+      >
         Suas <span className="text-primary">Tasks</span>
       </h1>{" "}
       <FormTask />
@@ -110,37 +114,44 @@ export default function TaskPage() {
               <TableRow
                 key={task.id}
                 className={checkedState.get(task.id) ? "bg-muted/50" : ""}
+                // className={task.is_done ? "bg-muted/50" : ""}
               >
                 <TableCell className="font-medium">
                   {" "}
                   <Checkbox
                     id="terms"
                     checked={checkedState.get(task.id) as CheckedState}
+                    // checked={task.is_done}
                     className=" rounded align-middle"
                     onCheckedChange={async (checked) => {
-                      
                       setCheckedState(
                         new Map(checkedState.set(task.id, !task.is_done)),
-                        );
-                        
-                        task.is_done = !task.is_done;
-                    
+                      );
+                      console.log(checkedState)
+                      const taskIndex = tasks.findIndex((thisTask) => {
+                        return thisTask.id == task.id;
+                      });
+
+                      const tempTasks = [...tasks];
+
+                      tempTasks[taskIndex].is_done =
+                        !tempTasks[taskIndex].is_done;
+
+                      setTasks(tempTasks);
 
                       const response = await fetch(`/api/tasks`, {
                         method: "PUT",
                         headers: {
                           "Content-Type": "application/json",
                         },
-                        body: JSON.stringify(task),
+                        body: JSON.stringify(tempTasks[taskIndex]),
                       });
                       if (!response.ok) {
                       }
                     }}
                   />
                 </TableCell>
-                <TableCell
-                  className={checkedState.get(task.id) ? "line-through" : ""}
-                >
+                <TableCell className={checkedState.get(task.id)? "line-through" : ""}>
                   {task.toDo}
                 </TableCell>
                 <TableCell>{task.priority}</TableCell>
