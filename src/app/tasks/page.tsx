@@ -31,9 +31,9 @@ export default function TaskPage() {
     redirect("/api/auth/signin");
   }
   const taskContext = useContext(TaskContext) as ObjectTaskContext;
-  const formContext = useContext(FormContext)  as ObjectFormContext;
   const { tasks, setTasks } = taskContext;
 
+  const formContext = useContext(FormContext) as ObjectFormContext;
   const { formState, setFormState } = formContext;
   //const [tasks, setTasks] = useState<Task[]>([]);
   let arraytask = new Array();
@@ -63,21 +63,16 @@ export default function TaskPage() {
       setTasks(tasks);
     }
     renderTasks();
-  }, [setTasks,formState, setFormState]);
- 
-  return (
-    <div className="flex flex-col gap-8 align-middle">
-      <h1
-        className="font let arrayMiniTasks =  new Array(); const [checkedState, setCheckedState]
+  }, [setTasks, formState, setFormState]);
 
-= useState(new Map(arrayMiniTasks)); miniTasks.forEach((miniTask: MiniTask) =>
-{ checkedState.set(miniTask.id, miniTask.is_done); });-semibold
-  my-4 text-center
-text-4xl		"
-      >
+  return (
+    <div className="flex flex-col gap-3 align-middle">
+      <h1 className="my-4 text-center text-4xl font-semibold		">
         Suas <span className="text-primary">Tasks</span>
       </h1>{" "}
-      <FormTask />
+      <div className="flex justify-end">
+        <FormTask />
+      </div>
       {tasks != undefined && tasks.length == 0 ? (
         <div className="flex flex-col	 items-center justify-center gap-12">
           <div>
@@ -131,30 +126,23 @@ text-4xl		"
                       setCheckedState(
                         new Map(checkedState.set(task.id, !task.is_done)),
                       );
-                      const taskIndex = tasks.findIndex((thisTask) => {
-                        return thisTask.id == task.id;
-                      });
-
-                      const tempTasks = [...tasks];
-
-                      tempTasks[taskIndex].is_done =
-                        !tempTasks[taskIndex].is_done;
-
-                      setTasks(tempTasks);
+                      task.is_done = !task.is_done;
 
                       const response = await fetch(`/api/tasks`, {
                         method: "PUT",
                         headers: {
                           "Content-Type": "application/json",
                         },
-                        body: JSON.stringify(tempTasks[taskIndex]),
+                        body: JSON.stringify(task),
                       });
                       if (!response.ok) {
                       }
                     }}
                   />
                 </TableCell>
-                <TableCell className={checkedState.get(task.id)? "line-through" : ""}>
+                <TableCell
+                  className={checkedState.get(task.id) ? "line-through" : ""}
+                >
                   {task.toDo}
                 </TableCell>
                 <TableCell>{task.priority}</TableCell>

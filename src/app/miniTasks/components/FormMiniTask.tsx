@@ -20,6 +20,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogPortal,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
@@ -33,8 +34,10 @@ import {
 } from "@/components/ui/popover";
 import { CalendarIcon, ScrollText } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Task } from "@/model/Task";
+import { FormContext } from "@/context/form";
+import ObjectFormContext from "@/app/tasks/interface/ObjectFormContext";
 
 const emptyStringToUndefined = z.literal("").transform(() => undefined);
 
@@ -55,6 +58,8 @@ interface IdTaskProps {
 }
 const FormTask = ({idTask}:IdTaskProps) => {
   const [open, setOpen] = useState(false);
+  const formContext = useContext(FormContext) as ObjectFormContext;
+  const { formState, setFormState } = formContext;
 
   const handleDialog = () => {
     setOpen(!open);
@@ -77,6 +82,8 @@ const FormTask = ({idTask}:IdTaskProps) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
+      setFormState(!formState);
+
     } catch (error) {
       console.error(error);
     }
@@ -84,8 +91,8 @@ const FormTask = ({idTask}:IdTaskProps) => {
 
   return (
     <Dialog open={open} onOpenChange={handleDialog}>
-      <DialogTrigger className="mr-6 flex justify-end">
-        <Button className="gap-2 rounded">
+      <DialogTrigger asChild className="mr-6 flex justify-end" >
+        <Button className="gap-2 rounded w-max	">
           Criar Mini Task <ScrollText />
         </Button>
       </DialogTrigger>
@@ -128,12 +135,10 @@ const FormTask = ({idTask}:IdTaskProps) => {
               )}
             />
 
-   
-            <DialogFooter>
-              <Button type="submit">Criar Mini Task</Button>
-            </DialogFooter>
+                  
           </form>
         </Form>
+              <Button type="submit">Criar Mini Task</Button>
       </DialogContent>
     </Dialog>
   );

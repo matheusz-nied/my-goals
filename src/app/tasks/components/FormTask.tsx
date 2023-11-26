@@ -83,9 +83,7 @@ const FormTask = () => {
         body: JSON.stringify(body),
       });
 
-      console.log(formState)
       setFormState(!formState);
-      console.log(formState)
 
     } catch (error) {
       console.error(error);
@@ -94,8 +92,8 @@ const FormTask = () => {
 
   return (
     <Dialog open={open} onOpenChange={handleDialog}>
-      <DialogTrigger className="mr-6 flex justify-end">
-        <Button className="gap-2 rounded">
+      <DialogTrigger asChild className="mr-6 flex justify-end">
+        <Button className="gap-2 rounded w-max">
           Criar Task <ScrollText />
         </Button>
       </DialogTrigger>
@@ -235,11 +233,10 @@ const FormTask = () => {
                 </FormItem>
               )}
             />
-            <DialogFooter>
-              <Button type="submit">Criar Task</Button>
-            </DialogFooter>
+   
           </form>
         </Form>
+              <Button type="submit">Criar Task</Button>
       </DialogContent>
     </Dialog>
   );

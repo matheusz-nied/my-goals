@@ -22,6 +22,8 @@ import FormTask from "../components/FormMiniTask";
 import ObjectTaskContext from "@/app/tasks/interface/ObjectTaskContext";
 import { TaskContext } from "@/context/task";
 import { MiniTask } from "@/model/MiniTask";
+import { FormContext } from "@/context/form";
+import ObjectFormContext from "@/app/tasks/interface/ObjectFormContext";
 
 export default function MiniTaskPage({
   params,
@@ -33,8 +35,11 @@ export default function MiniTaskPage({
     redirect("/api/auth/signin");
   }
   const taskContext = useContext(TaskContext) as ObjectTaskContext;
-
   const { tasks, setTasks } = taskContext;
+
+  const formContext = useContext(FormContext)  as ObjectFormContext;
+  const { formState, setFormState } = formContext;
+
 
   const task = tasks.find((task) => {
     return task.id === params.idTask;
@@ -71,8 +76,6 @@ export default function MiniTaskPage({
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
-      console.log("TEste get");
-      console.log(res);
 
       const body = await new Response(res.body).text();
       const miniTasksObject = JSON.parse(body);
@@ -85,15 +88,18 @@ export default function MiniTaskPage({
       setMiniTasks(miniTasks);
     }
     renderMiniTasks();
-  }, [miniTasks, setMiniTasks]);
+  }, [ setMiniTasks, formState, setFormState]);
 
   return (
-    <div className="flex flex-col gap-8 align-middle">
+    <div className="flex flex-col gap-4 align-middle">
       <h1 className="my-4 text-center text-4xl font-semibold		">
         Suas tasks referente a{" "}
         <span className="text-primary">{task?.toDo}</span>
       </h1>{" "}
+      <div className="flex justify-end">
+
       <FormTask idTask={params.idTask} />
+      </div>
       {miniTasks != undefined && miniTasks.length == 0 ? (
         <div className="flex flex-col	 items-center justify-center gap-12">
           <div>
