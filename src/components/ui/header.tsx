@@ -110,18 +110,6 @@ const Header = () => {
               </Link>
             </SheetClose>
 
-            <SheetClose asChild>
-              <Link href="/miniTasks">
-                <Button
-                  variant="outline"
-                  className="w-full justify-start gap-2"
-                >
-                  <PercentIcon size={16} />
-                  Mini Tasks
-                </Button>
-              </Link>
-            </SheetClose>
- 
             {status === "authenticated" && (
               <Button
                 onClick={handleLogoutClick}

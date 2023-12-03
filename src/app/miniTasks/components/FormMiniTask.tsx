@@ -56,7 +56,7 @@ const formSchema = z.object({
 interface IdTaskProps {
   idTask: string;
 }
-const FormTask = ({idTask}:IdTaskProps) => {
+const FormTask = ({ idTask }: IdTaskProps) => {
   const [open, setOpen] = useState(false);
   const formContext = useContext(FormContext) as ObjectFormContext;
   const { formState, setFormState } = formContext;
@@ -70,7 +70,6 @@ const FormTask = ({idTask}:IdTaskProps) => {
     defaultValues: {
       taskId: idTask,
     },
-
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -83,7 +82,6 @@ const FormTask = ({idTask}:IdTaskProps) => {
         body: JSON.stringify(body),
       });
       setFormState(!formState);
-
     } catch (error) {
       console.error(error);
     }
@@ -91,17 +89,15 @@ const FormTask = ({idTask}:IdTaskProps) => {
 
   return (
     <Dialog open={open} onOpenChange={handleDialog}>
-      <DialogTrigger asChild className="mr-6 flex justify-end" >
-        <Button className="gap-2 rounded w-max	">
+      <DialogTrigger asChild className="mr-6 flex justify-end">
+        <Button className="w-max gap-2 rounded	">
           Criar Mini Task <ScrollText />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Criar mini Task</DialogTitle>
-          <DialogDescription>
-            Crie uma mini tarefa
-          </DialogDescription>
+          <DialogDescription>Crie uma mini tarefa</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -127,7 +123,11 @@ const FormTask = ({idTask}:IdTaskProps) => {
                 <FormItem className="hidden">
                   <FormLabel>Task</FormLabel>
                   <FormControl>
-                    <Input placeholder="Terminar relatório" defaultValue={idTask} {...field} />
+                    <Input
+                      placeholder="Terminar relatório"
+                      defaultValue={idTask}
+                      {...field}
+                    />
                   </FormControl>
                   <FormDescription>O que você precisa fazer?</FormDescription>
                   <FormMessage />
@@ -135,10 +135,13 @@ const FormTask = ({idTask}:IdTaskProps) => {
               )}
             />
 
-                  
+            <div className="flex justify-center">
+              <Button className="w-9/12	" type="submit">
+                Criar Mini Task
+              </Button>
+            </div>
           </form>
         </Form>
-              <Button type="submit">Criar Mini Task</Button>
       </DialogContent>
     </Dialog>
   );

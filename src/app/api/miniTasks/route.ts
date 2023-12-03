@@ -15,22 +15,20 @@ export async function GET(request: NextRequest) {
     console.log({ error: "Erro" });
     return NextResponse.json({ error: "Erro" });
   }
-  const params =request.nextUrl.searchParams 
-  const taskId  = params.get('taskId')
+  const params = request.nextUrl.searchParams;
+  const taskId = params.get("taskId");
 
   if (taskId === null) {
     return NextResponse.json({ error: "Params null" });
   } else {
     const miniTasks = await prismaClient.miniTask.findMany({
       where: {
-        taskId: taskId
+        taskId: taskId,
       },
     });
 
     return NextResponse.json({ miniTasks: miniTasks }, { status: 200 });
   }
-  
-
 }
 export async function POST(req: NextRequest, res: NextResponse) {
   const body = await new Response(req.body).text();
@@ -48,11 +46,12 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
 export async function DELETE(req: NextRequest) {
   const miniTaskId = await new Response(req.body).text();
+  console.log(req.body);
   if (!miniTaskId) {
     return NextResponse.json({ error: "Id is missing" });
   }
   try {
-    const miniTask = await prismaClient.miniTask.delete({
+    await prismaClient.miniTask.delete({
       where: { id: miniTaskId },
     });
     return NextResponse.json({ status: 200 });
@@ -63,15 +62,14 @@ export async function DELETE(req: NextRequest) {
 }
 export async function PUT(req: NextRequest) {
   const body = await new Response(req.body).text();
-  const {id, description, taskId,is_done } = JSON.parse(body);
+  const { id, description, taskId, is_done } = JSON.parse(body);
   try {
     const result = await prismaClient.miniTask.update({
       where: { id: id },
       data: {
         description: description,
         taskId: taskId,
-        is_done: is_done
-
+        is_done: is_done,
       },
     });
 

@@ -233,10 +233,13 @@ const FormTask = () => {
                 </FormItem>
               )}
             />
-   
+        <div className="flex justify-center">
+              <Button className="w-9/12	" type="submit">
+                Criar Mini Task
+              </Button>
+            </div>
           </form>
         </Form>
-              <Button type="submit">Criar Task</Button>
       </DialogContent>
     </Dialog>
   );

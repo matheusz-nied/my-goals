@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ChevronRight, Loader } from "lucide-react";
+import { ChevronRight, Loader, Trash } from "lucide-react";
 import React, { useContext, useEffect, useState } from "react";
 import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -52,6 +52,14 @@ export default function MiniTaskPage({
   miniTasks.forEach((miniTask: MiniTask) => {
     checkedState.set(miniTask.id, miniTask.is_done);
   });
+
+  async function deleteMiniTask(id: string | undefined) {
+    await fetch("/api/miniTasks", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(id),
+    });
+  }
 
   useEffect(() => {
     async function getTask() {
@@ -131,6 +139,7 @@ export default function MiniTaskPage({
             <TableRow>
               <TableHead className="pr-2"> </TableHead>
               <TableHead>Tarefas</TableHead>
+              <TableHead></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -171,6 +180,13 @@ export default function MiniTaskPage({
                   }
                 >
                   {miniTask.description}
+                </TableCell>
+                <TableCell
+                   className="flex justify-end"
+                >
+                  <Button variant="ghost" onClick={()=> deleteMiniTask(miniTask.id)}>
+                  <Trash />
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
