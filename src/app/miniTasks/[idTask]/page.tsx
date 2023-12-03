@@ -24,6 +24,7 @@ import { TaskContext } from "@/context/task";
 import { MiniTask } from "@/model/MiniTask";
 import { FormContext } from "@/context/form";
 import ObjectFormContext from "@/app/tasks/interface/ObjectFormContext";
+import FormEditTask from "../components/FormEditTask";
 
 export default function MiniTaskPage({
   params,
@@ -37,9 +38,8 @@ export default function MiniTaskPage({
   const taskContext = useContext(TaskContext) as ObjectTaskContext;
   const { tasks, setTasks } = taskContext;
 
-  const formContext = useContext(FormContext)  as ObjectFormContext;
+  const formContext = useContext(FormContext) as ObjectFormContext;
   const { formState, setFormState } = formContext;
-
 
   const task = tasks.find((task) => {
     return task.id === params.idTask;
@@ -47,6 +47,7 @@ export default function MiniTaskPage({
 
   const [miniTasks, setMiniTasks] = useState<MiniTask[]>([]);
   let arrayMiniTasks = new Array();
+  const [loading, setloading] = useState(true);
 
   const [checkedState, setCheckedState] = useState(new Map(arrayMiniTasks));
   miniTasks.forEach((miniTask: MiniTask) => {
@@ -59,6 +60,7 @@ export default function MiniTaskPage({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(id),
     });
+    setFormState(!formState);
   }
 
   useEffect(() => {
@@ -78,16 +80,22 @@ export default function MiniTaskPage({
     getTask();
 
     async function getAllMiniTasks() {
-      const res = await fetch("/api/miniTasks?" + new URLSearchParams({
-        taskId : params.idTask
-      }) , {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
+      const res = await fetch(
+        "/api/miniTasks?" +
+          new URLSearchParams({
+            taskId: params.idTask,
+          }),
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        },
+      );
 
       const body = await new Response(res.body).text();
       const miniTasksObject = JSON.parse(body);
       const miniTasks = await miniTasksObject.miniTasks;
+      setloading(false);
+
       return miniTasks;
     }
 
@@ -96,19 +104,18 @@ export default function MiniTaskPage({
       setMiniTasks(miniTasks);
     }
     renderMiniTasks();
-  }, [ setMiniTasks, formState, setFormState]);
+  }, [setMiniTasks, formState, setFormState]);
 
-  return (
-    <div className="flex flex-col gap-4 align-middle">
-      <h1 className="my-4 text-center text-4xl font-semibold		">
-        Suas tasks referente a{" "}
-        <span className="text-primary">{task?.toDo}</span>
-      </h1>{" "}
-      <div className="flex justify-end">
-
-      <FormTask idTask={params.idTask} />
-      </div>
-      {miniTasks != undefined && miniTasks.length == 0 ? (
+  if (loading)
+    return (
+      <div className="flex flex-col gap-4 align-middle">
+        <h1 className="my-4 text-center text-4xl font-semibold		">
+          Suas tasks referente a{" "}
+          <span className="text-primary">{task?.toDo}</span>
+        </h1>{" "}
+        <div className="flex justify-end">
+          <FormTask idTask={params.idTask} />
+        </div>
         <div className="flex flex-col	 items-center justify-center gap-12">
           <div>
             <Skeleton className="h-12 w-12 rounded-full" />
@@ -131,6 +138,26 @@ export default function MiniTaskPage({
               <Skeleton className="h-4 w-[200px]" />
             </div>
           </div>
+        </div>
+      </div>
+    );
+
+  return (
+    <div className="flex flex-col gap-4 align-middle">
+      <h1 className="my-4 text-center text-2xl font-semibold		">
+        Suas tasks referente a{" "}
+        <span className="text-primary">{task?.toDo}</span>
+      </h1>{" "}
+      <div className="flex justify-end">
+        <div className="flex items-center	 gap-2  content-center	">
+          <FormEditTask  />
+
+          <FormTask idTask={params.idTask} />
+        </div>
+      </div>
+      {miniTasks != undefined && miniTasks.length == 0 ? (
+        <div className="flex justify-center pt-16 align-middle italic opacity-60">
+          <p>Sem mini tasks criadas</p>
         </div>
       ) : (
         <Table>
@@ -181,11 +208,12 @@ export default function MiniTaskPage({
                 >
                   {miniTask.description}
                 </TableCell>
-                <TableCell
-                   className="flex justify-end"
-                >
-                  <Button variant="ghost" onClick={()=> deleteMiniTask(miniTask.id)}>
-                  <Trash />
+                <TableCell className="flex justify-end">
+                  <Button
+                    variant="ghost"
+                    onClick={() => deleteMiniTask(miniTask.id)}
+                  >
+                    <Trash />
                   </Button>
                 </TableCell>
               </TableRow>

@@ -45,8 +45,10 @@ export async function POST(req: NextRequest, res: NextResponse) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const miniTaskId = await new Response(req.body).text();
-  console.log(req.body);
+  let miniTaskId = await new Response(req.body).text();
+  miniTaskId = miniTaskId.substring(0, miniTaskId.length - 1);
+  miniTaskId = miniTaskId.substring(1);
+
   if (!miniTaskId) {
     return NextResponse.json({ error: "Id is missing" });
   }
