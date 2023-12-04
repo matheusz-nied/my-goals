@@ -36,6 +36,9 @@ import { Calendar } from "@/components/ui/calendar";
 import { useContext, useState } from "react";
 import { FormContext } from "@/context/form";
 import ObjectFormContext from "@/app/tasks/interface/ObjectFormContext";
+import { useRouter } from "next/navigation";
+import { TaskContext } from "@/context/task";
+import ObjectTaskContext from "@/app/tasks/interface/ObjectTaskContext";
 
 const emptyStringToUndefined = z.literal("").transform(() => undefined);
 
@@ -57,10 +60,20 @@ const formSchema = z.object({
   }),
 });
 
-const FormEditTask = () => {
+interface IdTaskProps {
+  idTask: string;
+}
+
+const FormEditTask = ({ idTask }: IdTaskProps) => {
   const [open, setOpen] = useState(false);
   const formContext = useContext(FormContext) as ObjectFormContext;
   const { formState, setFormState } = formContext;
+  const router = useRouter()
+  const taskContext = useContext(TaskContext) as ObjectTaskContext;
+  const { tasks, setTasks } = taskContext;
+  const task = tasks.find((task) => {
+    return task.id === idTask;
+  });
 
   const handleDialog = () => {
     setOpen(!open);
@@ -84,16 +97,26 @@ const FormEditTask = () => {
       });
 
       setFormState(!formState);
-
     } catch (error) {
       console.error(error);
     }
+  }
+  async function deleteTask(id: string | undefined) {
+          handleDialog();
+
+    await fetch("/api/tasks", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(id),
+    });
+    router.push("/tasks")
+    
   }
 
   return (
     <Dialog open={open} onOpenChange={handleDialog}>
       <DialogTrigger asChild className="mr-6 flex justify-end">
-    <Button variant="outline" className="w-max gap-2 rounded	">
+        <Button variant="outline" className="w-max gap-2 rounded	">
           Editar Task <ScrollText />
         </Button>
       </DialogTrigger>
@@ -110,6 +133,7 @@ const FormEditTask = () => {
             <FormField
               control={form.control}
               name="toDo"
+              defaultValue={task?.toDo}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Task</FormLabel>
@@ -156,7 +180,7 @@ const FormEditTask = () => {
             <FormField
               control={form.control}
               name="date"
-              defaultValue={new Date()}
+              defaultValue={task?.date}
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Que dia deseja executar a tarefa?</FormLabel>
@@ -186,6 +210,7 @@ const FormEditTask = () => {
                         onSelect={field.onChange}
                         disabled={(date) => date < new Date()}
                         initialFocus
+                        
                       />
                     </PopoverContent>
                   </Popover>
@@ -208,22 +233,26 @@ const FormEditTask = () => {
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                       className="flex flex-col space-y-1"
-                    >
+
+>
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
-                          <RadioGroupItem value="Low" />
+                          <RadioGroupItem value="Low"         checked={task?.priority === "Low"}
+/>
                         </FormControl>
                         <FormLabel className="font-normal">Baixa</FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
-                          <RadioGroupItem value="Medium" />
+                          <RadioGroupItem value="Medium"        checked={task?.priority === "Medium"}
+ />
                         </FormControl>
                         <FormLabel className="font-normal">Media</FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
-                          <RadioGroupItem value="High" />
+                          <RadioGroupItem value="High"         checked={task?.priority === "High"}
+/>
                         </FormControl>
                         <FormLabel className="font-normal">Alta</FormLabel>
                       </FormItem>
@@ -233,8 +262,8 @@ const FormEditTask = () => {
                 </FormItem>
               )}
             />
-        <div className="flex justify-center gap-4">
-              <Button className="w-9/12	" type="submit">
+            <div className="flex justify-center gap-4">
+              <Button className="w-9/12	" onClick={() => deleteTask(idTask)}>
                 Deletar Task
               </Button>
               <Button variant="outline" className="w-9/12	" type="submit">

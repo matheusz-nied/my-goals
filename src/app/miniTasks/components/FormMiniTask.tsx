@@ -1,8 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,24 +16,14 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
-  DialogPortal,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import FloatButton from "@/components/ui/floatButton";
 import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { CalendarIcon, ScrollText } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
+
+import {  ScrollText } from "lucide-react";
 import { useContext, useState } from "react";
-import { Task } from "@/model/Task";
 import { FormContext } from "@/context/form";
 import ObjectFormContext from "@/app/tasks/interface/ObjectFormContext";
 
@@ -56,7 +44,7 @@ const formSchema = z.object({
 interface IdTaskProps {
   idTask: string;
 }
-const FormTask = ({ idTask }: IdTaskProps) => {
+const FormMiniTask = ({ idTask }: IdTaskProps) => {
   const [open, setOpen] = useState(false);
   const formContext = useContext(FormContext) as ObjectFormContext;
   const { formState, setFormState } = formContext;
@@ -147,4 +135,4 @@ const FormTask = ({ idTask }: IdTaskProps) => {
   );
 };
 
-export default FormTask;
+export default FormMiniTask;
