@@ -18,7 +18,7 @@ import { Task } from "@/model/Task";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CheckedState } from "@radix-ui/react-checkbox";
 import Link from "next/link";
-import FormTask from "../components/FormMiniTask";
+import FormMiniTask from "../components/FormMiniTask";
 import ObjectTaskContext from "@/app/tasks/interface/ObjectTaskContext";
 import { TaskContext } from "@/context/task";
 import { MiniTask } from "@/model/MiniTask";
@@ -109,14 +109,15 @@ export default function MiniTaskPage({
   if (loading)
     return (
       <div className="flex flex-col gap-4 align-middle">
-        <h1 className="my-4 text-center text-4xl font-semibold		">
+        <h1 className="my-4 text-center text-2xl font-semibold		">
           Suas tasks referente a{" "}
           <span className="text-primary">{task?.toDo}</span>
         </h1>{" "}
         <div className="flex justify-end">
-          <FormTask idTask={params.idTask} />
-        </div>
-        <div className="flex flex-col	 items-center justify-center gap-12">
+        <FormEditTask  idTask={params.idTask}/>
+
+<FormMiniTask idTask={params.idTask} />        </div>
+        <div className="flex flex-col	mt-10 items-center justify-center gap-12">
           <div>
             <Skeleton className="h-12 w-12 rounded-full" />
             <div className="space-y-2">
@@ -150,9 +151,9 @@ export default function MiniTaskPage({
       </h1>{" "}
       <div className="flex justify-end">
         <div className="flex items-center	 gap-2  content-center	">
-          <FormEditTask  />
+          <FormEditTask idTask={params.idTask} />
 
-          <FormTask idTask={params.idTask} />
+          <FormMiniTask idTask={params.idTask} />
         </div>
       </div>
       {miniTasks != undefined && miniTasks.length == 0 ? (

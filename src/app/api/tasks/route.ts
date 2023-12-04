@@ -48,12 +48,20 @@ export async function POST(req: NextRequest, res: NextResponse) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const taskId = await new Response(req.body).text();
+  let taskId = await new Response(req.body).text();
+  taskId = taskId.substring(0, taskId.length - 1);
+  taskId = taskId.substring(1);
+
   if (!taskId) {
     return NextResponse.json({ error: "Id is missing" });
   }
+  console.log(taskId)
   try {
-    const task = await prismaClient.task.delete({
+        
+    await prismaClient.miniTask.deleteMany({
+      where: { taskId: taskId },
+    });
+    await prismaClient.task.delete({
       where: { id: taskId },
     });
     return NextResponse.json({ status: 200 });

@@ -32,6 +32,7 @@ export default function TaskPage() {
   }
   const taskContext = useContext(TaskContext) as ObjectTaskContext;
   const { tasks, setTasks } = taskContext;
+  const [loading, setloading] = useState(true);
 
   const formContext = useContext(FormContext) as ObjectFormContext;
   const { formState, setFormState } = formContext;
@@ -53,6 +54,7 @@ export default function TaskPage() {
       const body = await new Response(res.body).text();
       const tasksObject = JSON.parse(body);
       const tasks = await tasksObject.tasks;
+      setloading(false);
 
       return tasks;
     }
@@ -64,6 +66,40 @@ export default function TaskPage() {
     }
     renderTasks();
   }, [setTasks, formState, setFormState]);
+  if (loading)
+    return (
+      <>
+        <h1 className="my-4 text-center text-4xl font-semibold		">
+          Suas <span className="text-primary">Tasks</span>
+        </h1>{" "}
+        <div className="flex justify-end">
+          <FormTask />
+        </div>
+        <div className="mt-10 flex flex-col	items-center justify-center gap-12">
+          <div>
+            <Skeleton className="h-12 w-12 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[250px]" />
+              <Skeleton className="h-4 w-[200px]" />
+            </div>
+          </div>
+          <div>
+            <Skeleton className="h-12 w-12 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[250px]" />
+              <Skeleton className="h-4 w-[200px]" />
+            </div>
+          </div>
+          <div>
+            <Skeleton className="h-12 w-12 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[250px]" />
+              <Skeleton className="h-4 w-[200px]" />
+            </div>
+          </div>
+        </div>
+      </>
+    );
 
   return (
     <div className="flex flex-col gap-3 align-middle">
@@ -74,28 +110,8 @@ export default function TaskPage() {
         <FormTask />
       </div>
       {tasks != undefined && tasks.length == 0 ? (
-        <div className="flex flex-col	 items-center justify-center gap-12">
-          <div>
-            <Skeleton className="h-12 w-12 rounded-full" />
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-[250px]" />
-              <Skeleton className="h-4 w-[200px]" />
-            </div>
-          </div>
-          <div>
-            <Skeleton className="h-12 w-12 rounded-full" />
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-[250px]" />
-              <Skeleton className="h-4 w-[200px]" />
-            </div>
-          </div>
-          <div>
-            <Skeleton className="h-12 w-12 rounded-full" />
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-[250px]" />
-              <Skeleton className="h-4 w-[200px]" />
-            </div>
-          </div>
+        <div className="flex justify-center pt-16 align-middle italic opacity-60">
+          <p>Sem tasks criadas</p>
         </div>
       ) : (
         <Table>
